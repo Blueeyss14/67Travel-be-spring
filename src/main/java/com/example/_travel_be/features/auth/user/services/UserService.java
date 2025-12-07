@@ -93,4 +93,17 @@ public class UserService {
         userRepository.delete(user);
     }
 
+    public boolean isAdmin(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User tidak ditemukan"));
+        return "ADMIN".equals(user.getRole());
+    }
+
+    public String getRole(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User tidak ditemukan"));
+        return user.getRole();
+    }
+
+
 }
