@@ -24,9 +24,7 @@ public class JwtUtils {
         String identifier = jwtConfig.getEmailFromToken(actualToken);
 
         User user = userRepository.findByEmail(identifier).orElse(null);
-        if(user != null) {
-            return user.getId();
-        }
+        if(user != null) return user.getId();
 
         Admin admin = adminRepository.findByUsername(identifier)
                 .orElseThrow(() -> new RuntimeException("User/Admin tidak ditemukan"));
@@ -38,12 +36,10 @@ public class JwtUtils {
         String identifier = jwtConfig.getEmailFromToken(actualToken);
 
         User user = userRepository.findByEmail(identifier).orElse(null);
-        if(user != null) {
-            return user.getRole();
-        }
+        if(user != null) return "USER";
 
         Admin admin = adminRepository.findByUsername(identifier)
                 .orElseThrow(() -> new RuntimeException("User/Admin tidak ditemukan"));
-        return admin.getRole();
+        return "ADMIN";
     }
 }

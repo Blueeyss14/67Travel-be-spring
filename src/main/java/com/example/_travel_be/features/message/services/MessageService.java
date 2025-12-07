@@ -1,10 +1,10 @@
 package com.example._travel_be.features.message.services;
 
-import com.example._travel_be.features.auth.admin.repository.AdminRepository;
 import com.example._travel_be.features.auth.user.repository.UserRepository;
-import com.example._travel_be.features.message.dto.ChatResponseDTO;
 import com.example._travel_be.features.message.model.Message;
 import com.example._travel_be.features.message.repository.MessageRepository;
+import com.example._travel_be.features.message.dto.ChatDTO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -13,56 +13,54 @@ import java.util.List;
 @Service
 public class MessageService {
 
-    private final MessageRepository repo;
-    private final UserRepository userRepo;
-    private final AdminRepository adminRepo;
+    @Autowired
+    private MessageRepository messageRepository;
 
-    public MessageService(MessageRepository repo, UserRepository userRepo, AdminRepository adminRepo) {
-        this.repo = repo;
-        this.userRepo = userRepo;
-        this.adminRepo = adminRepo;
-    }
+    @Autowired
+    private UserRepository userRepository;
 
-    public Message sendMessage(String senderType, Long senderId, String receiverType, Long receiverId, String content) {
-        Message msg = new Message();
-        msg.setSenderType(senderType);
-        msg.setSenderId(senderId);
-        msg.setReceiverType(receiverType);
-        msg.setReceiverId(receiverId);
-        msg.setContent(content);
-        return repo.save(msg);
-    }
-
-    public List<ChatResponseDTO> getChat(String requesterType, Long requesterId, String targetType, Long targetId) {
-        List<Message> messages1 = repo.findBySenderTypeAndSenderIdAndReceiverTypeAndReceiverId(
-                requesterType, requesterId, targetType, targetId
-        );
-        List<Message> messages2 = repo.findBySenderTypeAndSenderIdAndReceiverTypeAndReceiverId(
-                targetType, targetId, requesterType, requesterId
-        );
-        messages1.addAll(messages2);
-        messages1.sort((a,b) -> a.getTimestamp().compareTo(b.getTimestamp()));
-
-        List<ChatResponseDTO> response = new ArrayList<>();
-        for(Message msg : messages1) {
-            String senderName = "";
-            if(msg.getSenderType().equals("USER")) {
-                senderName = userRepo.findById(msg.getSenderId())
-                        .map(u -> u.getNama())
-                        .orElse("Unknown User");
-            } else {
-                senderName = adminRepo.findById(msg.getSenderId())
-                        .map(a -> a.getUsername())
-                        .orElse("Unknown Admin");
-            }
-            response.add(new ChatResponseDTO(
-                    msg.getId(),
-                    senderName,
-                    msg.getContent(),
-                    msg.getTimestamp()
-            ));
+    public Message sendMessage(Message msg) {
+        if (!userRepository.existsById(msg.getUserId())) {
+            throw new RuntimeException("no user found");
         }
 
-        return response;
+        Long lastSeq = messageRepository.findAllByUserIdOrderBySequenceAsc(msg.getUserId())
+                .stream()
+                .mapToLong(Message::getSequence)
+                .max()
+                .orElse(0L);
+        msg.setSequence(lastSeq + 1);
+        msg.setTimestamp(System.currentTimeMillis());
+        return messageRepository.save(msg);
+    }
+
+    public List<ChatDTO> getUserChats(Long userId) {
+        if (!userRepository.existsById(userId)) {
+            throw new RuntimeException("no user found");
+        }
+
+        String userName = userRepository.findById(userId).get().getNama();
+
+        List<Message> msgs = messageRepository.findAllByUserIdOrderBySequenceAsc(userId);
+        List<ChatDTO> chats = new ArrayList<>();
+        ChatDTO current = null;
+
+        for (Message m : msgs) {
+            if ((m.getUserMessage() != null && !m.getUserMessage().isEmpty())
+                    || (m.getAdminMessage() != null && !m.getAdminMessage().isEmpty())) {
+                ChatDTO chat = new ChatDTO(
+                        m.getId(),
+                        userId,
+                        userName,
+                        m.getUserMessage() != null ? m.getUserMessage() : "",
+                        m.getAdminMessage() != null ? m.getAdminMessage() : "",
+                        m.getTimestamp() != null ? m.getTimestamp() : System.currentTimeMillis()
+                );
+                chats.add(chat);
+            }
+        }
+
+
+        return chats;
     }
 }
