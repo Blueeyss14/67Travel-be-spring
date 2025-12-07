@@ -1,6 +1,9 @@
-package com.example._travel_be.auth;
+package com.example._travel_be.features.auth.admin.controller;
 
-import com.example._travel_be.model.Admin;
+import com.example._travel_be.features.auth.admin.model.Admin;
+import com.example._travel_be.features.auth.admin.dto.AuthResponse;
+import com.example._travel_be.features.auth.admin.dto.LoginRequest;
+import com.example._travel_be.features.auth.admin.services.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
