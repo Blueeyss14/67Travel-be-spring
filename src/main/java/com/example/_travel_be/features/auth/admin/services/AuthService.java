@@ -1,8 +1,10 @@
-package com.example._travel_be.auth;
+package com.example._travel_be.features.auth.admin.services;
 
 import com.example._travel_be.config.JwtConfig;
-import com.example._travel_be.model.Admin;
-import com.example._travel_be.repository.AdminRepository;
+import com.example._travel_be.features.auth.admin.dto.AuthResponse;
+import com.example._travel_be.features.auth.admin.dto.LoginRequest;
+import com.example._travel_be.features.auth.admin.model.Admin;
+import com.example._travel_be.features.auth.admin.repository.AdminRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

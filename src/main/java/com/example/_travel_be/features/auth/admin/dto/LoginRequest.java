@@ -1,4 +1,4 @@
-package com.example._travel_be.auth;
+package com.example._travel_be.features.auth.admin.dto;
 
 import lombok.Data;
 

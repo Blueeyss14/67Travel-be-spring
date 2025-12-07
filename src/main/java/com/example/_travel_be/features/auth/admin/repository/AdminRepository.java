@@ -1,6 +1,6 @@
-package com.example._travel_be.repository;
+package com.example._travel_be.features.auth.admin.repository;
 
-import com.example._travel_be.model.Admin;
+import com.example._travel_be.features.auth.admin.model.Admin;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import java.util.Optional;
