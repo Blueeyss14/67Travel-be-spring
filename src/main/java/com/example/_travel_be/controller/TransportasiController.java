@@ -1,3 +1,4 @@
+// CONTROLLER
 package com.example._travel_be.controller;
 
 import com.example._travel_be.model.Transportasi;
@@ -99,12 +100,12 @@ public class TransportasiController {
         }
     }
 
-    // GET search transportasi by name
+    // GET search transportasi by nama
     @GetMapping("/search")
-    public ResponseEntity<List<Transportasi>> searchTransportasiByName(
-            @RequestParam("name") String name) {
+    public ResponseEntity<List<Transportasi>> searchTransportasiByNama(
+            @RequestParam("nama") String nama) {
         try {
-            List<Transportasi> transportasiList = transportasiService.searchTransportasiByName(name);
+            List<Transportasi> transportasiList = transportasiService.searchTransportasiByNama(nama);
             if (transportasiList.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }

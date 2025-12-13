@@ -1,3 +1,4 @@
+// SERVICE
 package com.example._travel_be.service;
 
 import com.example._travel_be.model.Transportasi;
@@ -35,10 +36,11 @@ public class TransportasiService {
         Transportasi transportasi = transportasiRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Transportasi tidak ditemukan dengan id: " + id));
         
-        transportasi.setName(transportasiDetails.getName());
+        transportasi.setNama(transportasiDetails.getNama());
         transportasi.setJenisKendaraan(transportasiDetails.getJenisKendaraan());
-        transportasi.setSeat(transportasiDetails.getSeat());
+        transportasi.setMaxPassenger(transportasiDetails.getMaxPassenger());
         transportasi.setHarga(transportasiDetails.getHarga());
+        transportasi.setGambar(transportasiDetails.getGambar());
         
         return transportasiRepository.save(transportasi);
     }
@@ -55,8 +57,8 @@ public class TransportasiService {
         return transportasiRepository.findByJenisKendaraan(jenisKendaraan);
     }
     
-    // Search transportasi by name
-    public List<Transportasi> searchTransportasiByName(String name) {
-        return transportasiRepository.findByNameContainingIgnoreCase(name);
+    // Search transportasi by nama
+    public List<Transportasi> searchTransportasiByNama(String nama) {
+        return transportasiRepository.findByNamaContainingIgnoreCase(nama);
     }
 }
