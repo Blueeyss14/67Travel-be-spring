@@ -1,18 +1,21 @@
+// MODEL
 package com.example._travel_be.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import java.util.UUID;
+import java.util.List;
 
 @Entity
 @Data
+@Table(name = "transportasi")
 public class Transportasi {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID id;
+    private Integer id;
 
-    private String name;
+    private String nama;
     private String jenisKendaraan;
-    private Integer seat;
+    private Integer maxPassenger;
     private Double harga;
+    private String gambar;
 }

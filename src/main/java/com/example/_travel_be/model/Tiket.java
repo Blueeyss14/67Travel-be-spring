@@ -2,7 +2,6 @@ package com.example._travel_be.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import java.util.UUID;
 import java.time.LocalDateTime;
 
 @Entity
@@ -10,7 +9,7 @@ import java.time.LocalDateTime;
 public class Tiket {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID idTicket;
+    private Integer idTicket;
 
     @ManyToOne
     @JoinColumn(name = "destinasi_id")
@@ -24,15 +23,8 @@ public class Tiket {
     @JoinColumn(name = "akomodasi_id")
     private Akomodasi akomodasi;
 
-    private Integer jmlPengunjung;
-    private Double hargaTotal;
+    private Integer jumPengunjung;
+    private Double harga;
     private LocalDateTime waktu;
 
-    public void hitungBiaya() {
-        double hargaDestinasi = (destinasi != null) ? destinasi.getHarga() : 0;
-        double hargaTransport = (transportasi != null) ? transportasi.getHarga() : 0;
-        double hargaAkomodasi = (akomodasi != null) ? akomodasi.getHarga() : 0;
-
-        this.hargaTotal = (hargaDestinasi + hargaTransport + hargaAkomodasi) * jmlPengunjung;
-    }
 }

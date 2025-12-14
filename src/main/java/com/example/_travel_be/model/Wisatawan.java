@@ -12,13 +12,10 @@ public class Wisatawan extends User implements CustomerServiceChat, PengingatJad
 
     private String noHp;
 
-
     private String jadwal;
-
 
     @OneToMany(mappedBy = "wisatawan", cascade = CascadeType.ALL)
     private List<LaporanPengalaman> reviews;
-
 
     @Override
     public String balasChat() {
