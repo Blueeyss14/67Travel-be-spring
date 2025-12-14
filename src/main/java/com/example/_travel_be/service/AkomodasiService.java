@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 public class AkomodasiService {
@@ -21,7 +20,7 @@ public class AkomodasiService {
     }
 
     // 2. Mengambil data berdasarkan ID
-    public Optional<Akomodasi> getAkomodasiById(UUID id) {
+    public Optional<Akomodasi> getAkomodasiById(Integer id) {
         return akomodasiRepository.findById(id);
     }
 
@@ -31,7 +30,7 @@ public class AkomodasiService {
     }
 
     // 4. Update data (Cek dulu datanya ada gak)
-    public Akomodasi updateAkomodasi(UUID id, Akomodasi akomodasiBaru) {
+    public Akomodasi updateAkomodasi(Integer id, Akomodasi akomodasiBaru) {
         Optional<Akomodasi> akomodasiLama = akomodasiRepository.findById(id);
 
         if (akomodasiLama.isPresent()) {
@@ -41,11 +40,12 @@ public class AkomodasiService {
             existing.setAlamat(akomodasiBaru.getAlamat());
             existing.setFasilitas(akomodasiBaru.getFasilitas());
             existing.setKategori(akomodasiBaru.getKategori());
-            existing.setHarga(akomodasiBaru.getHarga());
+            existing.setPrice(akomodasiBaru.getPrice());
             existing.setRating(akomodasiBaru.getRating());
-            existing.setJarak(akomodasiBaru.getJarak());
+            existing.setKapasitas(akomodasiBaru.getKapasitas());
+            existing.setGambar(akomodasiBaru.getGambar());
             existing.setDeskripsi(akomodasiBaru.getDeskripsi());
-            
+
             return akomodasiRepository.save(existing);
         } else {
             return null; // Kalau ID gak ketemu, balikin null
@@ -53,12 +53,29 @@ public class AkomodasiService {
     }
 
     // 5. Hapus data
-    public boolean deleteAkomodasi(UUID id) {
+    public boolean deleteAkomodasi(Integer id) {
         if (akomodasiRepository.existsById(id)) {
             akomodasiRepository.deleteById(id);
             return true;
         } else {
             return false;
+        }
+    }
+
+    public void tampilkanDetail(Integer id) {
+        Optional<Akomodasi> akomodasiOpt = akomodasiRepository.findById(id);
+        if (akomodasiOpt.isPresent()) {
+            Akomodasi a = akomodasiOpt.get();
+            System.out.println("Akomodasi: " + a.getNama());
+            System.out.println("Alamat: " + a.getAlamat());
+            System.out.println("Kategori: " + a.getKategori());
+            System.out.println("Kapasitas: " + a.getKapasitas());
+            System.out.println("Rating: " + a.getRating());
+            System.out.println("Price: " + a.getPrice());
+            System.out.println("Fasilitas: " + a.getFasilitas());
+            System.out.println("Deskripsi: " + a.getDeskripsi());
+        } else {
+            System.out.println("Akomodasi dengan ID " + id + " tidak ditemukan.");
         }
     }
 }

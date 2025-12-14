@@ -2,21 +2,27 @@ package com.example._travel_be.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import java.util.UUID;
+import java.util.List;
 
 @Entity
 @Data
 public class Akomodasi {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID id;
+    private Integer id;
 
+    private String gambar;
     private String nama;
     private String alamat;
-    private String fasilitas;
     private String kategori;
-    private Double harga;
+    private Integer kapasitas;
     private Double rating;
-    private Double jarak;
+    private Double price;
+
+    @ElementCollection
+    private List<String> fasilitas;
+
+    @Column(length = 1000)
     private String deskripsi;
+
 }

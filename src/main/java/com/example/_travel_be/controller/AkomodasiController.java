@@ -8,10 +8,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/akomodasi") // URL-nya nanti: localhost:8080/api/akomodasi
+@RequestMapping("/api/akomodasi")
 public class AkomodasiController {
 
     @Autowired
@@ -25,7 +24,7 @@ public class AkomodasiController {
 
     // GET: Ambil Data per ID
     @GetMapping("/{id}")
-    public ResponseEntity<Akomodasi> getAkomodasiById(@PathVariable UUID id) {
+    public ResponseEntity<Akomodasi> getAkomodasiById(@PathVariable Integer id) {
         Optional<Akomodasi> akomodasi = akomodasiService.getAkomodasiById(id);
 
         // Kalau ada return data, kalau gak ada return 404 Not Found
@@ -41,7 +40,7 @@ public class AkomodasiController {
 
     // PUT: Update Data
     @PutMapping("/{id}")
-    public ResponseEntity<Akomodasi> updateAkomodasi(@PathVariable UUID id, @RequestBody Akomodasi akomodasi) {
+    public ResponseEntity<Akomodasi> updateAkomodasi(@PathVariable Integer id, @RequestBody Akomodasi akomodasi) {
         Akomodasi updated = akomodasiService.updateAkomodasi(id, akomodasi);
 
         if (updated != null) {
@@ -53,7 +52,7 @@ public class AkomodasiController {
 
     // DELETE: Hapus Data
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteAkomodasi(@PathVariable UUID id) {
+    public ResponseEntity<Void> deleteAkomodasi(@PathVariable Integer id) {
         boolean isDeleted = akomodasiService.deleteAkomodasi(id);
 
         if (isDeleted) {
@@ -61,5 +60,11 @@ public class AkomodasiController {
         } else {
             return ResponseEntity.notFound().build(); // Gagal hapus, ID gak ada
         }
+    }
+
+    @GetMapping("/{id}/detail")
+    public ResponseEntity<Void> tampilkanDetail(@PathVariable Integer id) {
+        akomodasiService.tampilkanDetail(id);
+        return ResponseEntity.ok().build();
     }
 }

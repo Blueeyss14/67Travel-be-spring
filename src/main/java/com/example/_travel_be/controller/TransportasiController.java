@@ -1,4 +1,3 @@
-// CONTROLLER
 package com.example._travel_be.controller;
 
 import com.example._travel_be.model.Transportasi;
@@ -10,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/transportasi")
@@ -36,7 +34,7 @@ public class TransportasiController {
 
     // GET transportasi by id
     @GetMapping("/{id}")
-    public ResponseEntity<Transportasi> getTransportasiById(@PathVariable("id") UUID id) {
+    public ResponseEntity<Transportasi> getTransportasiById(@PathVariable("id") Integer id) {
         try {
             Optional<Transportasi> transportasiData = transportasiService.getTransportasiById(id);
             return transportasiData.map(transportasi -> new ResponseEntity<>(transportasi, HttpStatus.OK))
@@ -60,7 +58,7 @@ public class TransportasiController {
     // PUT update transportasi
     @PutMapping("/{id}")
     public ResponseEntity<Transportasi> updateTransportasi(
-            @PathVariable("id") UUID id,
+            @PathVariable("id") Integer id,
             @RequestBody Transportasi transportasi) {
         try {
             Transportasi updatedTransportasi = transportasiService.updateTransportasi(id, transportasi);
@@ -74,7 +72,7 @@ public class TransportasiController {
 
     // DELETE transportasi
     @DeleteMapping("/{id}")
-    public ResponseEntity<HttpStatus> deleteTransportasi(@PathVariable("id") UUID id) {
+    public ResponseEntity<HttpStatus> deleteTransportasi(@PathVariable("id") Integer id) {
         try {
             transportasiService.deleteTransportasi(id);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -83,6 +81,13 @@ public class TransportasiController {
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    // GET detail
+    @GetMapping("/{id}/detail")
+    public ResponseEntity<Void> tampilkanDetail(@PathVariable("id") Integer id) {
+        transportasiService.tampilkanDetail(id);
+        return ResponseEntity.ok().build();
     }
 
     // GET transportasi by jenis kendaraan
