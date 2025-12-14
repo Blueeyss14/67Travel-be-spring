@@ -76,6 +76,42 @@ public class DestinationController {
         return service.get(id);
     }
 
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> update(
+            @PathVariable Long id,
+            @RequestPart("data") String data,
+            @RequestPart(value = "thumbnail", required = false) MultipartFile thumbnail,
+            @RequestPart(value = "images", required = false) List<MultipartFile> images
+    ) throws Exception {
+
+        ObjectMapper mapper = new ObjectMapper();
+        DestinationRequest req = mapper.readValue(data, DestinationRequest.class);
+
+        String uploadDir = System.getProperty("user.dir") + "/uploads/";
+        File dir = new File(uploadDir);
+        if (!dir.exists()) dir.mkdirs();
+
+        String thumbnailUrl = null;
+        if (thumbnail != null) {
+            String thumbnailName = System.currentTimeMillis() + "_" + thumbnail.getOriginalFilename();
+            File thumbnailFile = new File(uploadDir + thumbnailName);
+            thumbnail.transferTo(thumbnailFile);
+            thumbnailUrl = "/uploads/" + thumbnailName;
+        }
+
+        List<String> imageUrls = new ArrayList<>();
+        if (images != null) {
+            for (MultipartFile img : images) {
+                String imgName = System.currentTimeMillis() + "_" + img.getOriginalFilename();
+                File imgFile = new File(uploadDir + imgName);
+                img.transferTo(imgFile);
+                imageUrls.add("/uploads/" + imgName);
+            }
+        }
+
+        return ResponseEntity.ok(service.update(id, req, thumbnailUrl, imageUrls));
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id) {
         service.delete(id);

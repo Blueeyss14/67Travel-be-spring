@@ -49,6 +49,34 @@ public class DestinationService {
                 .orElseThrow(() -> new RuntimeException("destination not found"));
     }
 
+    public Destination update(
+            Long id,
+            DestinationRequest req,
+            String thumbnailUrl,
+            List<String> imageUrls
+    ) {
+        Destination d = repo.findById(id)
+                .orElseThrow(() -> new RuntimeException("destination not found"));
+
+        d.setName(req.getName());
+        d.setLocation(req.getLocation());
+        d.setOwner(req.getOwner());
+        d.setNumberOfGuest(req.getNumberOfGuest());
+        d.setPrice(req.getPrice());
+        d.setFacilities(req.getFacilities());
+        d.setDescription(req.getDescription());
+
+        if (thumbnailUrl != null) {
+            d.setThumbnailUrl(thumbnailUrl);
+        }
+
+        if (imageUrls != null && !imageUrls.isEmpty()) {
+            d.setImageUrls(imageUrls);
+        }
+
+        return repo.save(d);
+    }
+
     public void delete(Long id) {
         repo.deleteById(id);
     }
