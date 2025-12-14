@@ -12,7 +12,6 @@ public class Wisatawan extends User implements CustomerServiceChat, PengingatJad
 
     private String noHp;
 
-
     private String jadwal;
 
 
