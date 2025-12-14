@@ -3,7 +3,6 @@ package com.example._travel_be.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import java.util.List;
 
 @Entity
 @Data

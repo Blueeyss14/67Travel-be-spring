@@ -44,8 +44,6 @@ public class LaporanPengalamanService {
 
         existing.setKomentar(details.getKomentar());
         existing.setRating(details.getRating());
-        // Note: typically we might also update the User, but usually reviews stay with
-        // the original user.
 
         return laporanPengalamanRepository.save(existing);
     }
@@ -55,5 +53,15 @@ public class LaporanPengalamanService {
         LaporanPengalaman existing = laporanPengalamanRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Laporan tidak ditemukan ID: " + id));
         laporanPengalamanRepository.delete(existing);
+    }
+
+    // Logic moved from Model
+    public void processReview(Integer id) {
+        LaporanPengalaman lp = laporanPengalamanRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Laporan tidak ditemukan ID: " + id));
+
+        // Simulating the logic that was in review()
+        System.out
+                .println("Review by " + lp.getUser().getNama() + ": " + lp.getKomentar() + " (" + lp.getRating() + ")");
     }
 }

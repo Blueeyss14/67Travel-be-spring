@@ -25,9 +25,4 @@ public class LaporanPengalaman {
         this.rating = rating;
         this.user = user;
     }
-
-    // Method based on class diagram
-    public void review() {
-        System.out.println("Review by " + user.getNama() + ": " + komentar + " (" + rating + ")");
-    }
 }
