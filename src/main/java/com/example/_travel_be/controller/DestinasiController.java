@@ -8,79 +8,104 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/destinasi")
+@CrossOrigin(origins = "*")
 public class DestinasiController {
 
     private final DestinasiService destinasiService;
 
-    // INJEKSI (Dependency Injection) DestinasiService
     @Autowired
     public DestinasiController(DestinasiService destinasiService) {
         this.destinasiService = destinasiService;
     }
 
-    // 1. GET ALL: /api/destinasi
+    // GET all destinasi
     @GetMapping
     public ResponseEntity<List<Destinasi>> getAllDestinasi() {
-        List<Destinasi> destinasiList = destinasiService.findAll();
-        return new ResponseEntity<>(destinasiList, HttpStatus.OK); 
+        try {
+            List<Destinasi> destinasiList = destinasiService.getAllDestinasi();
+            if (destinasiList.isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+            return new ResponseEntity<>(destinasiList, HttpStatus.OK);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
-    // 2. GET BY ID: /api/destinasi/{id}
+    // GET destinasi by id
     @GetMapping("/{id}")
-    public ResponseEntity<Destinasi> getDestinasiById(@PathVariable UUID id) {
-        return destinasiService.findById(id)
-                .map(destinasi -> new ResponseEntity<>(destinasi, HttpStatus.OK))
-                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND)); 
+    public ResponseEntity<Destinasi> getDestinasiById(@PathVariable Integer id) {
+        try {
+            Optional<Destinasi> destinasi = destinasiService.getDestinasiById(id);
+            return destinasi.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
+                    .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
-    
-    // 3. GET BY LOKASI: /api/destinasi/search?lokasi=Bali
+
+    // GET search destinasi by lokasi
     @GetMapping("/search")
     public ResponseEntity<List<Destinasi>> getDestinasiByLokasi(@RequestParam String lokasi) {
-        List<Destinasi> destinasiList = destinasiService.findByLokasi(lokasi);
-        return new ResponseEntity<>(destinasiList, HttpStatus.OK);
+        try {
+            List<Destinasi> destinasiList = destinasiService.getDestinasiByLokasi(lokasi);
+            if (destinasiList.isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+            return new ResponseEntity<>(destinasiList, HttpStatus.OK);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
-    // 4. POST (CREATE): /api/destinasi
+    // POST create new destinasi
     @PostMapping
     public ResponseEntity<Destinasi> createDestinasi(@RequestBody Destinasi destinasi) {
         try {
-            Destinasi newDestinasi = destinasiService.save(destinasi);
-            // Mengembalikan objek yang baru dibuat dengan status HTTP 201 CREATED
-            return new ResponseEntity<>(newDestinasi, HttpStatus.CREATED); 
+            Destinasi newDestinasi = destinasiService.createDestinasi(destinasi);
+            return new ResponseEntity<>(newDestinasi, HttpStatus.CREATED);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null); 
-        }
-    }
-    
-    // 5. PUT (UPDATE): /api/destinasi/{id}
-    @PutMapping("/{id}")
-    public ResponseEntity<Destinasi> updateDestinasi(@PathVariable UUID id, @RequestBody Destinasi destinasiDetails) {
-        return destinasiService.findById(id)
-                .map(existingDestinasi -> {
-                    // Update properti yang dikirim dari body
-                    existingDestinasi.setNama(destinasiDetails.getNama());
-                    existingDestinasi.setDeskripsi(destinasiDetails.getDeskripsi());
-                    existingDestinasi.setHarga(destinasiDetails.getHarga());
-                    // ... lakukan update field lainnya
-
-                    Destinasi updatedDestinasi = destinasiService.save(existingDestinasi);
-                    return new ResponseEntity<>(updatedDestinasi, HttpStatus.OK);
-                })
-                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
-    }
-
-    // 6. DELETE: /api/destinasi/{id}
-    @DeleteMapping("/{id}")
-    public ResponseEntity<HttpStatus> deleteDestinasi(@PathVariable UUID id) {
-        try {
-            destinasiService.deleteById(id);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT); // Status 204
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR); // Status 500
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    // PUT update destinasi
+    @PutMapping("/{id}")
+    public ResponseEntity<Destinasi> updateDestinasi(@PathVariable Integer id,
+            @RequestBody Destinasi destinasiDetails) {
+        try {
+            Destinasi updatedDestinasi = destinasiService.updateDestinasi(id, destinasiDetails);
+            return new ResponseEntity<>(updatedDestinasi, HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    // DELETE destinasi
+    @DeleteMapping("/{id}")
+    public ResponseEntity<HttpStatus> deleteDestinasi(@PathVariable Integer id) {
+        try {
+            destinasiService.deleteDestinasi(id);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // GET detail (mimicking TransportasiController style)
+    @GetMapping("/{id}/detail")
+    public ResponseEntity<Void> tampilkanDetail(@PathVariable Integer id) {
+        destinasiService.tampilkanDetail(id);
+        return ResponseEntity.ok().build();
     }
 }

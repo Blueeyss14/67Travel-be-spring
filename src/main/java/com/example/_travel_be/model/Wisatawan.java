@@ -14,7 +14,7 @@ public class Wisatawan extends User implements CustomerServiceChat, PengingatJad
 
     private String jadwal;
 
-    @OneToMany(mappedBy = "wisatawan", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<LaporanPengalaman> reviews;
 
     @Override
