@@ -6,6 +6,4 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AkomodasiRepository extends JpaRepository<Akomodasi, Integer> {
-    // Kosong aja, JpaRepository udah nyediain fitur CRUD (Create, Read, Update,
-    // Delete) otomatis!
 }
