@@ -11,7 +11,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/akomodasi") // URL-nya nanti: localhost:8080/akomodasi
+@RequestMapping("/api/akomodasi") // URL-nya nanti: localhost:8080/api/akomodasi
 public class AkomodasiController {
 
     @Autowired
