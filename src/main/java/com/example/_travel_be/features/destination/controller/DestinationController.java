@@ -3,21 +3,16 @@ package com.example._travel_be.features.destination.controller;
 import com.example._travel_be.features.destination.services.DestinationService;
 import com.example._travel_be.features.destination.dto.DestinationRequest;
 import com.example._travel_be.features.destination.model.Destination;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
-
-import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
 
 @RestController
 @RequestMapping("/api/destinations")
@@ -31,44 +26,43 @@ public class DestinationController {
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> create(
-            @RequestPart("data") String data,
-            @RequestPart("thumbnail") MultipartFile thumbnail,
-            @RequestPart(value = "images", required = false) List<MultipartFile> images
+    public ResponseEntity<Destination> create(
+            @RequestParam("name") String name,
+            @RequestParam("location") String location,
+            @RequestParam("owner") String owner,
+            @RequestParam("maxOfGuest") Integer maxOfGuest,
+            @RequestParam("price") Double price,
+            @RequestParam("thumbnailUrl") MultipartFile thumbnail,
+            @RequestParam(value = "imageUrls[]", required = false) List<MultipartFile> images,
+            @RequestParam(value = "description", required = false) String description,
+            @RequestParam(value = "facilities[]", required = false) List<String> facilities,
+            Authentication authentication
     ) throws Exception {
 
-        ObjectMapper mapper = new ObjectMapper();
-        DestinationRequest req = mapper.readValue(data, DestinationRequest.class);
+        Long adminId = (Long) authentication.getPrincipal();
 
-        String uploadDir = System.getProperty("user.dir") + "/uploads/";
-        File dir = new File(uploadDir);
-        if (!dir.exists()) dir.mkdirs();
+        DestinationRequest req = new DestinationRequest();
+        req.setName(name);
+        req.setLocation(location);
+        req.setOwner(owner);
+        req.setMaxOfGuest(maxOfGuest);
+        req.setPrice(price);
+        req.setDescription(description);
+        req.setFacilities(facilities);
 
-        String thumbnailName = System.currentTimeMillis() + "_" + thumbnail.getOriginalFilename();
-        File thumbnailFile = new File(uploadDir + thumbnailName);
-        thumbnail.transferTo(thumbnailFile);
-        String thumbnailUrl = "/uploads/" + thumbnailName;
-
-        List<String> imageUrls = new ArrayList<>();
-        if (images != null) {
-            for (MultipartFile img : images) {
-                String imgName = System.currentTimeMillis() + "_" + img.getOriginalFilename();
-                File imgFile = new File(uploadDir + imgName);
-                img.transferTo(imgFile);
-                imageUrls.add("/uploads/" + imgName);
-            }
-        }
-
-        return ResponseEntity.ok(service.create(req, thumbnailUrl, imageUrls));
+        Destination d = service.create(req, thumbnail, images, adminId);
+        return ResponseEntity.ok(d);
     }
 
-
     @GetMapping
-    public Page<Destination> getAll(
+    public ResponseEntity<Map<String, Object>> getAll(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "10") int size,
+            Authentication authentication
     ) {
-        return service.getAll(PageRequest.of(page, size));
+        Long userId = authentication != null ? (Long) authentication.getPrincipal() : null;
+        Page<Destination> data = service.getAll(PageRequest.of(page, size), userId);
+        return ResponseEntity.ok(Map.of("content", data.getContent()));
     }
 
     @GetMapping("/{id}")
@@ -77,44 +71,49 @@ public class DestinationController {
     }
 
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> update(
+    public ResponseEntity<Destination> update(
             @PathVariable Long id,
-            @RequestPart("data") String data,
-            @RequestPart(value = "thumbnail", required = false) MultipartFile thumbnail,
-            @RequestPart(value = "images", required = false) List<MultipartFile> images
+            @RequestParam("name") String name,
+            @RequestParam("location") String location,
+            @RequestParam("owner") String owner,
+            @RequestParam("maxOfGuest") Integer maxOfGuest,
+            @RequestParam("price") Double price,
+            @RequestParam(value = "thumbnailUrl", required = false) MultipartFile thumbnail,
+            @RequestParam(value = "imageUrls[]", required = false) List<MultipartFile> images,
+            @RequestParam(value = "description", required = false) String description,
+            @RequestParam(value = "facilities[]", required = false) List<String> facilities,
+            Authentication authentication
     ) throws Exception {
 
-        ObjectMapper mapper = new ObjectMapper();
-        DestinationRequest req = mapper.readValue(data, DestinationRequest.class);
+        Long adminId = (Long) authentication.getPrincipal();
 
-        String uploadDir = System.getProperty("user.dir") + "/uploads/";
-        File dir = new File(uploadDir);
-        if (!dir.exists()) dir.mkdirs();
+        DestinationRequest req = new DestinationRequest();
+        req.setName(name);
+        req.setLocation(location);
+        req.setOwner(owner);
+        req.setMaxOfGuest(maxOfGuest);
+        req.setPrice(price);
+        req.setDescription(description);
+        req.setFacilities(facilities);
 
-        String thumbnailUrl = null;
-        if (thumbnail != null) {
-            String thumbnailName = System.currentTimeMillis() + "_" + thumbnail.getOriginalFilename();
-            File thumbnailFile = new File(uploadDir + thumbnailName);
-            thumbnail.transferTo(thumbnailFile);
-            thumbnailUrl = "/uploads/" + thumbnailName;
-        }
-
-        List<String> imageUrls = new ArrayList<>();
-        if (images != null) {
-            for (MultipartFile img : images) {
-                String imgName = System.currentTimeMillis() + "_" + img.getOriginalFilename();
-                File imgFile = new File(uploadDir + imgName);
-                img.transferTo(imgFile);
-                imageUrls.add("/uploads/" + imgName);
-            }
-        }
-
-        return ResponseEntity.ok(service.update(id, req, thumbnailUrl, imageUrls));
+        Destination d = service.update(id, req, thumbnail, images, adminId);
+        return ResponseEntity.ok(d);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable Long id) {
-        service.delete(id);
+    public ResponseEntity<?> delete(@PathVariable Long id, Authentication authentication) {
+        Long adminId = (Long) authentication.getPrincipal();
+        service.delete(id, adminId);
         return ResponseEntity.ok(Map.of("message", "deleted"));
+    }
+
+    @PutMapping("/{id}/toggle-bookmark")
+    public ResponseEntity<Destination> toggleBookmark(
+            @PathVariable Long id,
+            Authentication authentication
+    ) {
+        Long userId = (Long) authentication.getPrincipal();
+        Destination d = service.toggleBookmark(id, userId);
+        return ResponseEntity.ok(d);
     }
 }

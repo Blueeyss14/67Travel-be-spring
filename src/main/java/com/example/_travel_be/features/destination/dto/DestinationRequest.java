@@ -9,7 +9,7 @@ public class DestinationRequest {
     private String name;
     private String location;
     private String owner;
-    private Integer numberOfGuest;
+    private Integer maxOfGuest;
     private Double price;
     private List<String> facilities;
     private String description;

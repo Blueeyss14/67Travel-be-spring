@@ -1,11 +1,14 @@
 package com.example._travel_be.features.destination.model;
 
+import com.example._travel_be.features.auth.user.model.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "destinations")
@@ -17,6 +20,8 @@ public class Destination {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    private Long adminId;
 
     private String name;
     private String location;
@@ -35,4 +40,12 @@ public class Destination {
 
     @Column(columnDefinition = "TEXT")
     private String description;
+
+    @ManyToMany
+    @JoinTable(
+            name = "destination_bookmarks",
+            joinColumns = @JoinColumn(name = "destination_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private Set<User> bookmarkedBy = new HashSet<>();
 }
