@@ -1,12 +1,12 @@
 package com.example._travel_be.features.accommodation.controller;
 
-import com.example._travel_be.features.accommodation.dto.AccommodationRequest;
 import com.example._travel_be.features.accommodation.model.Accommodation;
 import com.example._travel_be.features.accommodation.services.AccommodationService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Map;
 
@@ -21,9 +21,17 @@ public class AccommodationController {
         this.service = service;
     }
 
-    @PostMapping
-    public ResponseEntity<?> create(@RequestBody AccommodationRequest req) {
-        return ResponseEntity.ok(service.create(req));
+    @PostMapping(consumes = "multipart/form-data")
+    public ResponseEntity<?> create(
+            @RequestParam String name,
+            @RequestParam Double latitude,
+            @RequestParam Double longitude,
+            @RequestParam Double price,
+            @RequestParam(required = false) MultipartFile thumbnail
+    ) {
+        return ResponseEntity.ok(
+                service.create(name, latitude, longitude, price, thumbnail)
+        );
     }
 
     @GetMapping
@@ -39,12 +47,18 @@ public class AccommodationController {
         return service.get(id);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping(value = "/{id}", consumes = "multipart/form-data")
     public ResponseEntity<?> update(
             @PathVariable Long id,
-            @RequestBody AccommodationRequest req
+            @RequestParam String name,
+            @RequestParam Double latitude,
+            @RequestParam Double longitude,
+            @RequestParam Double price,
+            @RequestParam(required = false) MultipartFile thumbnail
     ) {
-        return ResponseEntity.ok(service.update(id, req));
+        return ResponseEntity.ok(
+                service.update(id, name, latitude, longitude, price, thumbnail)
+        );
     }
 
     @DeleteMapping("/{id}")

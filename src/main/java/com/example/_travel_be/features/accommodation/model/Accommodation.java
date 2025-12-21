@@ -20,4 +20,6 @@ public class Accommodation {
     private Double latitude;
     private Double longitude;
     private Double price;
+    private String thumbnailUrl;
 }
+

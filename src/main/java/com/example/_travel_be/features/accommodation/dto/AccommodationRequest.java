@@ -8,4 +8,5 @@ public class AccommodationRequest {
     private Double latitude;
     private Double longitude;
     private Double price;
+    private String thumbnail;
 }
