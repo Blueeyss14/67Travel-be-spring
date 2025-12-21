@@ -1,4 +1,5 @@
-package com.example._travel_be.features.auth.admin.model;
+package com.example._travel_be.auth.admin.model;
+
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -16,7 +17,7 @@ public class Admin {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false)
+    @Column(unique = true,  nullable = false)
     private String username;
 
     @Column(nullable = false)
