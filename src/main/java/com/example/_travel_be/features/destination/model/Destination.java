@@ -1,6 +1,7 @@
 package com.example._travel_be.features.destination.model;
 
 import com.example._travel_be.features.auth.user.model.User;
+import com.example._travel_be.features.rating.model.Rating;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,14 +23,12 @@ public class Destination {
     private Long id;
 
     private Long adminId;
-
     private String name;
     private String location;
     private String owner;
     private Integer numberOfGuest;
     private Double rating;
     private Double price;
-
     private String thumbnailUrl;
 
     @ElementCollection
@@ -48,4 +47,7 @@ public class Destination {
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
     private Set<User> bookmarkedBy = new HashSet<>();
+
+    @OneToMany(mappedBy = "destination", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Rating> ratings;
 }
