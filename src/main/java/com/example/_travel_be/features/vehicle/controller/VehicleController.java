@@ -4,7 +4,6 @@ import com.example._travel_be.features.vehicle.dto.VehicleRequest;
 import com.example._travel_be.features.vehicle.model.Vehicle;
 import com.example._travel_be.features.vehicle.services.VehicleService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
@@ -12,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.util.Map;
 
 @RestController
@@ -35,17 +33,7 @@ public class VehicleController {
         ObjectMapper mapper = new ObjectMapper();
         VehicleRequest req = mapper.readValue(data, VehicleRequest.class);
 
-        String uploadDir = System.getProperty("user.dir") + "/uploads/";
-        File dir = new File(uploadDir);
-        if (!dir.exists()) dir.mkdirs();
-
-        String name = System.currentTimeMillis() + "_" + thumbnail.getOriginalFilename();
-        File file = new File(uploadDir + name);
-        thumbnail.transferTo(file);
-
-        return ResponseEntity.ok(
-                service.create(req, "/uploads/" + name)
-        );
+        return ResponseEntity.ok(service.create(req, thumbnail));
     }
 
     @GetMapping
@@ -71,21 +59,7 @@ public class VehicleController {
         ObjectMapper mapper = new ObjectMapper();
         VehicleRequest req = mapper.readValue(data, VehicleRequest.class);
 
-        String thumbnailUrl = null;
-        if (thumbnail != null) {
-            String uploadDir = System.getProperty("user.dir") + "/uploads/";
-            File dir = new File(uploadDir);
-            if (!dir.exists()) dir.mkdirs();
-
-            String name = System.currentTimeMillis() + "_" + thumbnail.getOriginalFilename();
-            File file = new File(uploadDir + name);
-            thumbnail.transferTo(file);
-            thumbnailUrl = "/uploads/" + name;
-        }
-
-        return ResponseEntity.ok(
-                service.update(id, req, thumbnailUrl)
-        );
+        return ResponseEntity.ok(service.update(id, req, thumbnail));
     }
 
     @DeleteMapping("/{id}")
